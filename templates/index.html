@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DriveShare - Peer-to-Peer Car Rental</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+  <header>
+    <div class="logo">DriveShare</div>
+    <nav>
+      <ul>
+        <li><a href="#" class="nav-tab active" data-tab="home">Home</a></li>
+        <li><a href="#" class="nav-tab" data-tab="search">Cars</a></li>
+        <li><a href="#" class="nav-tab" data-tab="bookings">My Bookings</a></li>
+        <li><a href="#" class="nav-tab" data-tab="messages">Messages</a></li>
+        <li><a href="#" class="nav-tab" data-tab="profile">Profile</a></li>
+        <li><a href="#" id="login-link">Login</a></li>
+        <li><a href="#" id="register-link">Register</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <div id="notification-area"></div>
+
+  <main>
+    <!-- Home Section -->
+    <section id="home-section" class="content-section active">
+      <div class="hero">
+        <h1>Find Your Perfect Ride</h1>
+        <p>Rent unique vehicles directly from local owners</p>
+      </div>
+    </section>
+
+    <!-- Search Section -->
+    <section id="search-section" class="content-section">
+      <h2>Find the Perfect Car</h2>
+      <form id="car-search-form">
+        <div class="form-group">
+          <label for="location">Location</label>
+          <input type="text" id="location" name="location" required>
+        </div>
+        <div class="form-group">
+          <label for="start_date">Start Date</label>
+          <input type="date" id="start_date" name="start_date" required>
+        </div>
+        <div class="form-group">
+          <label for="end_date">End Date</label>
+          <input type="date" id="end_date" name="end_date" required>
+        </div>
+        <button type="submit">Search</button>
+      </form>
+      <div id="search-results-section">
+        <h2>Available Cars</h2>
+        <div id="search-results" class="car-listings"></div>
+      </div>
+    </section>
+
+    <!-- Bookings Section -->
+    <section id="bookings-section" class="content-section">
+      <h2>My Bookings</h2>
+      <div id="bookings-list" class="booking-cards"></div>
+    </section>
+
+    <!-- Messages Section -->
+    <section id="messages-section" class="content-section">
+      <div class="messages-container">
+        <div class="message-list" id="inbox-messages"></div>
+        <div class="message-compose">
+          <h3>New Message</h3>
+          <form id="send-message-form">
+            <div class="form-group">
+              <label for="receiver_email">To:</label>
+              <input type="email" id="receiver_email" name="receiver_email" required>
+            </div>
+            <div class="form-group">
+              <label for="message-content">Message:</label>
+              <textarea id="message-content" name="content" maxlength="256" required></textarea>
+            </div>
+            <button type="submit">Send Message</button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- Profile Section -->
+    <section id="profile-section" class="content-section">
+      <div class="profile-info">
+        <h2>My Profile</h2>
+        <div id="user-details">
+          <p>Username: <span id="profile-username"></span></p>
+          <p>Email: <span id="profile-email"></span></p>
+        </div>
+        <button id="edit-profile-btn">Edit Profile</button>
+        <div class="security-questions">
+          <h3>Security Settings</h3>
+          <button id="change-password-btn">Change Password</button>
+          <button id="logout-btn">Logout</button>
+        </div>
+      </div>
+      <div class="my-listings">
+        <h3>My Car Listings</h3>
+        <!-- This button is used by the CarListingComponent to open the listing modal -->
+        <button id="add-car-btn">List New Car</button>
+        <div id="user-cars-list" class="car-listings"></div>
+      </div>
+    </section>
+
+    
+    <!-- Booking Modal -->
+    <div id="booking-modal" class="modal">
+      <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>Book a Car</h2>
+        <form id="booking-form">
+          <input type="hidden" id="car_id" name="car_id">
+          <div class="form-group">
+            <label for="booking_start_date">Start Date</label>
+            <input type="date" id="booking_start_date" name="start_date" required>
+          </div>
+          <div class="form-group">
+            <label for="booking_end_date">End Date</label>
+            <input type="date" id="booking_end_date" name="end_date" required>
+          </div>
+          <button type="submit">Confirm Booking</button>
+        </form>
+      </div>
+    </div>
+
+    
+    <!-- New Car Listing Modal -->
+    <div id="car-listing-modal" class="modal">
+      <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>List a New Car</h2>
+        <form id="car-listing-form">
+          <div class="form-group">
+            <label for="car-make">Make</label>
+            <input type="text" id="car-make" name="make" required>
+          </div>
+          <div class="form-group">
+            <label for="car-model">Model</label>
+            <input type="text" id="car-model" name="model" required>
+          </div>
+          <div class="form-group">
+            <label for="car-year">Year</label>
+            <input type="number" id="car-year" name="year" required>
+          </div>
+          <div class="form-group">
+            <label for="car-price">Price per Day</label>
+            <input type="number" id="car-price" name="price_per_day" step="0.01" required>
+          </div>
+          <div class="form-group">
+            <label for="car-location">Location</label>
+            <input type="text" id="car-location" name="location" required>
+          </div>
+          <button type="submit">List Car</button>
+        </form>
+      </div>
+    </div>
+
+ 
+
+    <!-- Login Modal -->
+    <div id="login-modal" class="modal">
+      <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>Login</h2>
+        <form id="login-form">
+          <div class="form-group">
+            <label for="login-email">Email</label>
+            <input type="email" id="login-email" required>
+          </div>
+          <div class="form-group">
+            <label for="login-password">Password</label>
+            <input type="password" id="login-password" required>
+          </div>
+          <button type="submit">Login</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Register Modal -->
+    <div id="register-modal" class="modal">
+      <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>Register</h2>
+        <form id="register-form">
+          <div class="form-group">
+            <label for="register-username">Username</label>
+            <input type="text" id="register-username" required>
+          </div>
+          <div class="form-group">
+            <label for="register-email">Email</label>
+            <input type="email" id="register-email" required>
+          </div>
+          <div class="form-group">
+            <label for="register-password">Password</label>
+            <input type="password" id="register-password" required>
+          </div>
+          <h3>Security Question 1</h3>
+          <div class="form-group">
+            <label for="security-question-1">Question</label>
+            <input type="text" id="security-question-1" required>
+          </div>
+          <div class="form-group">
+            <label for="security-answer-1">Answer</label>
+            <input type="text" id="security-answer-1" required>
+          </div>
+          <h3>Security Question 2</h3>
+          <div class="form-group">
+            <label for="security-question-2">Question</label>
+            <input type="text" id="security-question-2" required>
+          </div>
+          <div class="form-group">
+            <label for="security-answer-2">Answer</label>
+            <input type="text" id="security-answer-2" required>
+          </div>
+          <h3>Security Question 3</h3>
+          <div class="form-group">
+            <label for="security-question-3">Question</label>
+            <input type="text" id="security-question-3" required>
+          </div>
+          <div class="form-group">
+            <label for="security-answer-3">Answer</label>
+            <input type="text" id="security-answer-3" required>
+          </div>
+          <button type="submit">Register</button>
+        </form>
+      </div>
+    </div>
+
+  </main>
+
+  <footer>
+    <p>&copy; 2025 DriveShare - Peer-to-Peer Car Rental Platform</p>
+  </footer>
+
+  <script type="module" src="{{ url_for('static', filename='main.js') }}"></script>
+</body>
+</html>
